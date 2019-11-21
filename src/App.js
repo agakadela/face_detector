@@ -10,10 +10,6 @@ import Rank from "./components/Rank/Rank";
 import Particles from "react-particles-js";
 import "./App.css";
 
-const app = new Clarifai.App({
-  apiKey: "ac5546da7b744b68839e879cfd5ab33c"
-});
-
 const particlesOptions = {
   particles: {
     number: {
@@ -41,26 +37,26 @@ const particlesOptions = {
     }
   }
 };
+
+const initialState = {
+  input: "",
+  imageURL: "",
+  box: "",
+  route: "signin",
+  isSignedIn: false,
+  user: {
+    id: "",
+    name: "",
+    email: "",
+    entries: 0,
+    joined: ""
+  }
+};
 class App extends React.Component {
-  state = {
-    input: "",
-    imageURL: "",
-    box: "",
-    route: "signin",
-    isSignedIn: false,
-    user: {
-      id: "",
-      name: "",
-      email: "",
-      entries: 0,
-      joined: ""
-    }
-  };
+  state = initialState;
 
   componentDidMount() {
-    fetch("http://localhost:3000")
-      .then(response => response.json())
-      .then(data => console.log(data));
+    fetch("http://localhost:3000").then(response => response.json());
   }
 
   inputChangeHandler = event => {
@@ -88,12 +84,16 @@ class App extends React.Component {
   };
 
   submitHandler = () => {
-    this.setState({
-      imageURL: this.state.input
-    });
+    this.setState({ imageURL: this.state.input });
 
-    app.models
-      .predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
+    fetch("http://localhost:3000/imageurl", {
+      method: "post",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        input: this.state.input
+      })
+    })
+      .then(response => response.json())
       .then(response => {
         if (response) {
           fetch("http://localhost:3000/image", {
@@ -107,6 +107,7 @@ class App extends React.Component {
             .then(count =>
               this.setState({
                 user: {
+                  ...this.state.user,
                   entries: count
                 }
               })

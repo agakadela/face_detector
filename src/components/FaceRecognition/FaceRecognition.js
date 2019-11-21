@@ -8,19 +8,21 @@ const FaceRecognition = ({ imageURL, box }) => {
         <img
           id="inputimage"
           src={imageURL}
-          alt="check faces"
+          alt={imageURL ? "face to recognize" : null}
           width="500px"
           height="auto"
         />
-        <div
-          className="bounding-box"
-          style={{
-            top: box.topRow,
-            right: box.rightCol,
-            bottom: box.bottomRow,
-            left: box.leftCol
-          }}
-        ></div>
+        {box ? (
+          <div
+            className="bounding-box"
+            style={{
+              top: box.topRow,
+              right: box.rightCol,
+              bottom: box.bottomRow,
+              left: box.leftCol
+            }}
+          ></div>
+        ) : null}
       </div>
     </div>
   );
